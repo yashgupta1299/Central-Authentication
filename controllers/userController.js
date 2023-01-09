@@ -5,7 +5,6 @@ const { promisify } = require('util');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/AppError');
-const factory = require('./handlerFactory');
 
 const unlinkAsync = promisify(fs.unlink);
 
@@ -114,24 +113,3 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
         data: null
     });
 });
-
-// implimented via signup
-exports.createNewUser = (req, res) => {
-    res.status(500).json({
-        status: 'fail',
-        message: 'please use /api/v1/users/signup route for this'
-    });
-};
-
-exports.getAllUser = factory.getAll(User);
-
-exports.getMe = (req, res, next) => {
-    req.params.id = req.user.id;
-    next();
-};
-exports.getUser = factory.getOne(User);
-
-//Do not use for update password
-exports.updateUser = factory.updateOne(User);
-
-exports.deleteUser = factory.deleteOne(User);

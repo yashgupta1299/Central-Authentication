@@ -4,19 +4,14 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
-const hpp = require('hpp');
-const path = require('path');
+// const hpp = require('hpp');
+// const path = require('path');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const cors = require('cors');
-const tourRouter = require('./routes/tourRoute');
-const userRouter = require('./routes/userRoute');
-const reviewRouter = require('./routes/reviewRoute');
-const bookingRouter = require('./routes/bookingRoute');
-const viewRouter = require('./routes/viewRoute');
 const googleAuthRoute = require('./routes/googleAuthRoute');
+const userAuthRoute = require('./routes/authenticationRoute');
 const AppError = require('./utils/AppError');
-const bookingController = require('./controllers/bookingController');
 const globalErrorController = require('./controllers/globalErrorController');
 
 const app = express();
@@ -25,14 +20,13 @@ const app = express();
 
 app.enable('trust proxy');
 
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, '/views'));
-
 // Implement CORS
 // Access-Control-Allow-Origin to *
 // not we can add custom origin or custom routes for this action
 // as it is a normal middleware which basically set headers
-app.use(cors());
+// app.use(cors());
+//https://stackoverflow.com/questions/72105765/axios-doesnt-create-a-cookie-even-though-set-cookie-header-is-there
+app.use(cors({ credentials: true, origin: true })); // for one client I can set domain also
 // say our api is at api.natours.com and front-end at natours.com
 // then we can allow only custom origin
 // app.use(cors({
@@ -47,9 +41,6 @@ app.use(cors());
 // goes to browser again
 app.options('*', cors());
 // app.options('/api/v1/tours/:id', cors());
-
-// serving static files
-app.use(express.static(path.join(__dirname, '/public')));
 
 // set security http headers
 // app.use(helmet()); // helmet() will return a function which sits here
@@ -81,13 +72,6 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// for stripe we want req.body in raw process hence we impliment that route before any parser
-app.post(
-    '/webhook-checkout',
-    express.raw({ type: 'application/json' }),
-    bookingController.webhookCheckout
-);
-
 // body parser reading data from body into req.body and also limit the body size
 app.use(express.json({ limit: '10kb' }));
 // cookie parser
@@ -104,24 +88,24 @@ app.use(mongoSanitize());
 // prevent from adding javascript or html code, say by changing html symbol to its entities
 app.use(xss());
 
-//Prevent parameter pollution
-// say if i give ?sort=price&sort=ratingsAverage then it will take
-// only last value of sort
-// whitelist means it will ignore those fields
-// say if i give ?ratingsAverage=4.8&ratingsAverage=4.5
-// default behaviour req.query = { ratingsAverage: [ '4.8', '4.5' ] }
-app.use(
-    hpp({
-        whitelist: [
-            'duration',
-            'ratingsQuantity',
-            'ratingsAverage',
-            'maxGroupSize',
-            'difficulty',
-            'price'
-        ]
-    })
-);
+// //Prevent parameter pollution
+// // say if i give ?sort=price&sort=ratingsAverage then it will take
+// // only last value of sort
+// // whitelist means it will ignore those fields
+// // say if i give ?ratingsAverage=4.8&ratingsAverage=4.5
+// // default behaviour req.query = { ratingsAverage: [ '4.8', '4.5' ] }
+// app.use(
+//     hpp({
+//         whitelist: [
+//             'duration',
+//             'ratingsQuantity',
+//             'ratingsAverage',
+//             'maxGroupSize',
+//             'difficulty',
+//             'price'
+//         ]
+//     })
+// );
 
 // use to compress text which is send to the client
 app.use(compression());
@@ -135,12 +119,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/auth', googleAuthRoute);
-app.use('/', viewRouter);
-app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
-app.use('/api/v1/reviews', reviewRouter);
-app.use('/api/v1/bookings', bookingRouter);
-
+app.use('/user', userAuthRoute);
 // error generator for all other routes
 // for all methods hence all is used
 // for all routes hence * is used
