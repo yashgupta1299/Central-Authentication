@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -41,6 +42,9 @@ app.use(cors({ credentials: true, origin: true })); // for one client I can set 
 // goes to browser again
 app.options('*', cors());
 // app.options('/api/v1/tours/:id', cors());
+
+// serving static files
+app.use(express.static(path.join(__dirname, '/public')));
 
 // set security http headers
 // app.use(helmet()); // helmet() will return a function which sits here
