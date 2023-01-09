@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const jwt = require('jsonwebtoken');
+const Google = require('./../models/googleModel');
 
 passport.use(
     new GoogleStrategy(
@@ -10,24 +10,28 @@ passport.use(
             clientSecret: process.env.clientSecret
         },
         (accessToken, refreshToken, profile, done) => {
-            const token = jwt.sign(
-                { id: profile._json.email },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn: '10m' }
-            );
             // console.log(profile);
-            const user = {
-                email: profile._json.email,
-                name: profile._json.name,
-                // profileUrl: profile._json.picture,
-                token
-            };
+            const googleData = { googleId: profile.id };
+            ['name', 'email', 'picture'].forEach(ele => {
+                if (profile._json[ele]) {
+                    googleData[ele] = profile._json[ele];
+                }
+            });
+            (async () => {
+                try {
+                    await Google.create(googleData);
+                } catch (err) {
+                    // console.log(err);
+                }
+                const user = {
+                    id: profile.id
+                };
 
-            // i can pass error here
-            // done(new Error("something went wrong..."), user);
-
-            // i passed user here so that i can use this in callback url as req.user
-            done(null, user);
+                // i can pass error here
+                // done(new Error("something went wrong..."), user);
+                done(null, user);
+                // i passed user here so that i can use this in callback url as req.user
+            })();
         }
     )
 );

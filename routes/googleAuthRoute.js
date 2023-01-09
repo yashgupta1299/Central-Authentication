@@ -1,4 +1,6 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 
 const router = express.Router();
 
@@ -21,23 +23,37 @@ router.get(
 router.get(
     '/callback',
     passport.authenticate('google', {
-        failureRedirect: '/?alert=authenticationFailed',
+        failureRedirect: 'http://127.0.0.1:4000/?alert=authenticationFailed',
         session: false
     }),
     (req, res) => {
-        // sending jwt with id=email, and 10 min validity so that i can use this
-        // cookie for signup purpose
-        res.cookie('jwt', req.user.token, {
-            expires: new Date(Date.now() + 10 * 60 * 1000),
-            // cannot be changed by browser
-            httpOnly: true,
-            // connection can be done only over https
-            secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
-        });
-        res.redirect(`http://127.0.0.1:4000/signup`);
-        // res.status(200).json({
-        //     status: 'success'
-        // });
+        (async () => {
+            try {
+                const token = await promisify(jwt.sign)(
+                    { id: req.user.id },
+                    process.env.JWT_SECRET_KEY,
+                    {
+                        expiresIn: '5m'
+                    }
+                );
+
+                // cookie for signup purpose
+                res.cookie('sta', token, {
+                    expires: new Date(Date.now() + 5 * 60 * 1000),
+                    // cannot be changed by browser
+                    httpOnly: true,
+                    // connection can be done only over https
+                    secure:
+                        req.secure ||
+                        req.headers['x-forwarded-proto'] === 'https'
+                });
+                res.redirect(`http://127.0.0.1:4000/signup`);
+            } catch (err) {
+                res.redirect(
+                    'http://127.0.0.1:4000/?alert=authenticationFailed'
+                );
+            }
+        })();
     }
 );
 
