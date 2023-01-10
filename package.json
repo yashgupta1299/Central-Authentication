@@ -13,7 +13,7 @@
     "scripts": {
         "start": "node server.js",
         "dev": "nodemon -e js,css,html,pug,env,json server.js",
-        "start:prod": "NODE_ENV=production nodemon server.js",
+        "prod": "NODE_ENV=production nodemon server.js",
         "debug": "ndb srver.js",
         "watch:js": "parcel watch ./public/js/index.js --dist-dir ./public/js/bundle --public-url js",
         "build:js": "parcel build ./public/js/index.js --dist-dir ./public/js/bundle --public-url js"

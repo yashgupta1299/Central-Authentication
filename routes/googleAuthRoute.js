@@ -29,18 +29,6 @@ router.get(
     (req, res) => {
         (async () => {
             try {
-                // console.log('call back1');
-                // const token = await jwtSignToken(req.user.id);
-                // console.log('call back2');
-                // console.log(token);
-                // const token = await promisify(jwt.sign)(
-                //     { id: req.user.id },
-                //     process.env.JWT_SECRET_KEY,
-                //     {
-                //         expiresIn: '5m'
-                //     }
-                // );
-
                 await promisify(jwt.sign)(
                     { id: req.user.id },
                     process.env.JWT_SECRET_KEY_STA,

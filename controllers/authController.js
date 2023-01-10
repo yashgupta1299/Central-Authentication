@@ -74,19 +74,3 @@ exports.login = catchAsync(async (req, res, next) => {
         });
     }
 });
-
-exports.logout = (req, res) => {
-    // altered jwt so that verification failed when server reloads it
-    // time expire so that browser delete the cookie from itself
-    res.cookie('jwt', 'logged-out', {
-        expires: new Date(Date.now() + 10 * 1000),
-        httpOnly: true
-    });
-    res.cookie('refreshToken', 'logged-out', {
-        expires: new Date(Date.now() + 10 * 1000),
-        httpOnly: true
-    });
-    res.status(200).json({
-        status: 'success'
-    });
-};

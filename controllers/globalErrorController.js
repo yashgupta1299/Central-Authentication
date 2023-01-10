@@ -1,63 +1,37 @@
 const AppError = require('./../utils/AppError');
 
+// status is succeess or fail or error
 const sendErrorDev = (err, req, res) => {
-    // a) for API
-    if (req.originalUrl.startsWith('/api')) {
-        return res.status(err.statusCode).json({
-            status: err.status,
-            error: err,
-            message: err.message,
-            stack: err.stack
-        });
-    }
-
-    // b) for rendered website
+    // for API
     console.log('ERROR 🔥', err);
-    res.status(err.statusCode).render('error', {
-        title: 'Something went wrong!',
-        msg: err.message
+    res.status(err.statusCode).json({
+        status: err.status,
+        error: err,
+        message: err.message,
+        stack: err.stack
     });
 };
 
 const sendErrorProd = (err, req, res) => {
-    // a) for API
-    if (req.originalUrl.startsWith('/api')) {
-        //a.1 Operational, trusted error: send message to client
-        if (err.isOperational) {
-            return res.status(err.statusCode).json({
-                status: err.status,
-                message: err.message
-            });
-        }
+    // for API
 
-        //a.2 Programming or other unknown error: don't leak error details
-        // Log error to see later in hosting site to fix it
-        console.error('ERROR 🔥', err);
-        // Send generic message as this is a new error
-        return res.status(500).json({
-            status: 'error',
-            message: 'Something went wrong!'
-        });
-    }
-
-    // b) for rendered website
-
-    //b.1 Operational, trusted error: send message to client
+    // Operational, trusted error: send message to client
     if (err.isOperational) {
         console.log(err);
-        return res.status(err.statusCode).render('error', {
-            title: 'Something went wrong!',
-            msg: err.message
+        return res.status(err.statusCode).json({
+            status: err.status,
+            message: err.message
         });
     }
 
-    //b.2 Programming or other unknown error: don't leak error details
+    // Programming or other unknown error: don't leak error details
     // Log error to see later in hosting site to fix it
     console.error('ERROR 🔥', err);
     // Send generic message as this is a new error
-    res.status(err.statusCode).render('error', {
+    res.status(err.statusCode).json({
+        status: 'fail',
         title: 'Something went wrong!',
-        msg: 'Please try again later!'
+        message: 'Please try again later!'
     });
 };
 
@@ -65,12 +39,6 @@ const handleCastErrorDB = err => {
     const message = `Invalid ${err.path}: ${err.value}`;
     return new AppError(message, 400);
 };
-// const handleDuplicateFieldsDB = err => {
-//     console.log('🔥🔥', err);
-//     const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-//     const message = `Duplicate field value: ${value}. Please use another value!`;
-//     return new AppError(message, 400);
-// };
 const handleDuplicateFieldsDB = err => {
     let message;
     if (err.keyValue.name) {
@@ -96,7 +64,6 @@ const handleTokenExpiredError = () => {
     return new AppError('Your token is expired please log in again!', 401);
 };
 module.exports = (err, req, res, next) => {
-    // console.log(err.stack);
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
     if (process.env.NODE_ENV === 'development') {
@@ -104,7 +71,7 @@ module.exports = (err, req, res, next) => {
     } else if (process.env.NODE_ENV === 'production') {
         // let error = { ...err }; // wrong
         let error = JSON.parse(JSON.stringify(err)); // deep copy
-        error.message = err.message;
+        error.message = err.message; // but still needs
         if (error.name === 'CastError') {
             error = handleCastErrorDB(error);
         }
