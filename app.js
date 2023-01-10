@@ -19,7 +19,8 @@ const app = express();
 
 // Global Middlewares
 
-app.enable('trust proxy');
+// testing
+// app.enable('trust proxy');
 
 // Implement CORS
 // Access-Control-Allow-Origin to *
@@ -27,7 +28,8 @@ app.enable('trust proxy');
 // as it is a normal middleware which basically set headers
 // app.use(cors());
 //https://stackoverflow.com/questions/72105765/axios-doesnt-create-a-cookie-even-though-set-cookie-header-is-there
-app.use(cors({ credentials: true, origin: true })); // for one client I can set domain also
+// app.use(cors({ credentials: true, origin: true })); // for one client I can set domain also
+app.use(cors({ credentials: true, origin: 'http://127.0.0.1:4000' }));
 // say our api is at api.natours.com and front-end at natours.com
 // then we can allow only custom origin
 // app.use(cors({
@@ -40,7 +42,8 @@ app.use(cors({ credentials: true, origin: true })); // for one client I can set 
 // like put, patch, delete, or request having cookies that weather we allow that origin or not
 // options is just a method like get, post we are just setting headers for preflight request which
 // goes to browser again
-app.options('*', cors());
+// app.options('*', cors());
+app.options('http://127.0.0.1:4000', cors());
 // app.options('/api/v1/tours/:id', cors());
 
 // serving static files
