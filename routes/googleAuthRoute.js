@@ -31,7 +31,7 @@ router.get(
             try {
                 await promisify(jwt.sign)(
                     { id: req.user.id },
-                    process.env.JWT_SECRET_KEY_STA,
+                    process.env.JWT_SECRET_KEY_AT,
                     { expiresIn: '5min', algorithm: 'RS256' },
                     (err, token) => {
                         if (!err) {

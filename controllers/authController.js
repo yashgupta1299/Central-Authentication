@@ -39,7 +39,7 @@ exports.login = catchAsync(async (req, res, next) => {
     try {
         await promisify(jwt.sign)(
             { id: user.id },
-            process.env.JWT_SECRET_KEY_STA,
+            process.env.JWT_SECRET_KEY_AT,
             { expiresIn: '15min', algorithm: 'RS256' },
             async (err, tok) => {
                 if (!err) {
@@ -52,7 +52,7 @@ exports.login = catchAsync(async (req, res, next) => {
                         domain: process.env.COOKIE_DOMAIN,
 
                         // cookie send back from browser if generated from the same origin
-                        sameSite: 'strict',
+                        sameSite: 'lax',
 
                         // connection can be done only over https
                         secure:
@@ -64,7 +64,7 @@ exports.login = catchAsync(async (req, res, next) => {
                     // creating another cookie as refresh token
                     await promisify(jwt.sign)(
                         { id: user.id },
-                        process.env.JWT_SECRET_KEY_STA,
+                        process.env.JWT_SECRET_KEY_RT,
                         { expiresIn: '90d', algorithm: 'RS256' },
                         (error, token) => {
                             if (!err) {
@@ -78,7 +78,7 @@ exports.login = catchAsync(async (req, res, next) => {
                                     domain: process.env.COOKIE_DOMAIN,
 
                                     // cookie send back from browser if generated from the same origin
-                                    sameSite: 'strict',
+                                    sameSite: 'lax',
 
                                     // connection can be done only over https
                                     secure:
@@ -98,7 +98,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
                                     domain: process.env.COOKIE_DOMAIN,
                                     // cookie send back from browser if generated from the same origin
-                                    sameSite: 'strict',
+                                    sameSite: 'lax',
 
                                     // connection can be done only over https
                                     secure:
@@ -151,8 +151,7 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
     //2. verify the request token and if it failed promise is rejected
     let decoded;
     try {
-        const kid = 'abcd';
-        const pk = await publicKey(kid);
+        const pk = await publicKey(process.env.KID_RT);
         decoded = await promisify(jwt.verify)(token, pk, {
             algorithm: ['RS256']
         });
@@ -180,7 +179,7 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
     try {
         await promisify(jwt.sign)(
             { id: decoded.id },
-            process.env.JWT_SECRET_KEY_STA,
+            process.env.JWT_SECRET_KEY_AT,
             { expiresIn: '15min', algorithm: 'RS256' },
             async (err, tok) => {
                 if (!err) {
@@ -192,7 +191,7 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
 
                         domain: process.env.COOKIE_DOMAIN,
                         // cookie send back from browser if generated from the same origin
-                        sameSite: 'strict',
+                        sameSite: 'lax',
 
                         // connection can be done only over https
                         secure:
@@ -210,7 +209,7 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
 
                         domain: process.env.COOKIE_DOMAIN,
                         // cookie send back from browser if generated from the same origin
-                        sameSite: 'strict',
+                        sameSite: 'lax',
 
                         // connection can be done only over https
                         secure:
