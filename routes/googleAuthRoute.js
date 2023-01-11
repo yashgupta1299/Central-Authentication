@@ -42,7 +42,7 @@ router.get(
                                 httpOnly: true,
 
                                 // cookie send back from browser if generated from the same origin
-                                sameSite: 'strict',
+                                // sameSite: 'strict',
 
                                 // connection can be done only over https(if true)
                                 secure:
