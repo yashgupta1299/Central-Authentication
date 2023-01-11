@@ -48,8 +48,13 @@ exports.login = catchAsync(async (req, res, next) => {
                         expires: new Date(Date.now() + 15 * 60 * 1000),
                         // cannot be changed by browser
                         httpOnly: true,
+
+                        // cookie send back from browser if generated from the same origin
+                        sameSite: 'strict',
+
                         // connection can be done only over https
                         secure:
+                            process.env.cookieSecure ||
                             req.secure ||
                             req.headers['x-forwarded-proto'] === 'https'
                     });
@@ -68,8 +73,13 @@ exports.login = catchAsync(async (req, res, next) => {
                                     ),
                                     // cannot be changed by browser
                                     httpOnly: true,
+
+                                    // cookie send back from browser if generated from the same origin
+                                    sameSite: 'strict',
+
                                     // connection can be done only over https
                                     secure:
+                                        process.env.cookieSecure ||
                                         req.secure ||
                                         req.headers['x-forwarded-proto'] ===
                                             'https'
@@ -82,8 +92,13 @@ exports.login = catchAsync(async (req, res, next) => {
                                     ),
                                     // can be changed by browser
                                     httpOnly: false,
+
+                                    // cookie send back from browser if generated from the same origin
+                                    sameSite: 'strict',
+
                                     // connection can be done only over https
                                     secure:
+                                        process.env.cookieSecure ||
                                         req.secure ||
                                         req.headers['x-forwarded-proto'] ===
                                             'https'
@@ -170,8 +185,13 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
                         expires: new Date(Date.now() + 15 * 60 * 1000),
                         // cannot be changed by browser
                         httpOnly: true,
+
+                        // cookie send back from browser if generated from the same origin
+                        sameSite: 'strict',
+
                         // connection can be done only over https
                         secure:
+                            process.env.cookieSecure ||
                             req.secure ||
                             req.headers['x-forwarded-proto'] === 'https'
                     });
@@ -182,8 +202,13 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
                         ),
                         // can be changed by browser
                         httpOnly: false,
+
+                        // cookie send back from browser if generated from the same origin
+                        sameSite: 'strict',
+
                         // connection can be done only over https
                         secure:
+                            process.env.cookieSecure ||
                             req.secure ||
                             req.headers['x-forwarded-proto'] === 'https'
                     });

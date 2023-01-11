@@ -40,8 +40,13 @@ router.get(
                                 expires: new Date(Date.now() + 5 * 60 * 1000),
                                 // cannot be changed by browser
                                 httpOnly: true,
-                                // connection can be done only over https
+
+                                // cookie send back from browser if generated from the same origin
+                                sameSite: 'strict',
+
+                                // connection can be done only over https(if true)
                                 secure:
+                                    process.env.cookieSecure ||
                                     req.secure ||
                                     req.headers['x-forwarded-proto'] === 'https'
                             });
