@@ -47,7 +47,9 @@ exports.login = catchAsync(async (req, res, next) => {
                     res.cookie('at', tok, {
                         expires: new Date(Date.now() + 15 * 60 * 1000),
                         // cannot be changed by browser
+
                         httpOnly: true,
+                        domain: process.env.COOKIE_DOMAIN,
 
                         // cookie send back from browser if generated from the same origin
                         sameSite: 'strict',
@@ -73,6 +75,7 @@ exports.login = catchAsync(async (req, res, next) => {
                                     ),
                                     // cannot be changed by browser
                                     httpOnly: true,
+                                    domain: process.env.COOKIE_DOMAIN,
 
                                     // cookie send back from browser if generated from the same origin
                                     sameSite: 'strict',
@@ -93,6 +96,7 @@ exports.login = catchAsync(async (req, res, next) => {
                                     // can be changed by browser
                                     httpOnly: false,
 
+                                    domain: process.env.COOKIE_DOMAIN,
                                     // cookie send back from browser if generated from the same origin
                                     sameSite: 'strict',
 
@@ -186,6 +190,7 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
                         // cannot be changed by browser
                         httpOnly: true,
 
+                        domain: process.env.COOKIE_DOMAIN,
                         // cookie send back from browser if generated from the same origin
                         sameSite: 'strict',
 
@@ -203,6 +208,7 @@ exports.getAccessToken = catchAsync(async (req, res, next) => {
                         // can be changed by browser
                         httpOnly: false,
 
+                        domain: process.env.COOKIE_DOMAIN,
                         // cookie send back from browser if generated from the same origin
                         sameSite: 'strict',
 

@@ -40,7 +40,7 @@ router.get(
                                 expires: new Date(Date.now() + 5 * 60 * 1000),
                                 // cannot be changed by browser
                                 httpOnly: true,
-                                domain: '.up.railway.app',
+                                domain: process.env.COOKIE_DOMAIN,
                                 // cookie send back from browser if generated from the same origin
                                 sameSite: 'strict',
 
