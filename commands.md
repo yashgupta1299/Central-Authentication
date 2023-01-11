@@ -14,11 +14,17 @@
     run: "node convertPemtoJwk.js" then paste the output in public/.well-known/jwks.json
 
 5.  Method to add private.pem file to .env file
+
     > -   Copy your content from your pem file to the browser's console (add ``):
     > -   `-----BEGIN RSA PRIVATE KEY-----
+
         Copy your content from your pem file to the browser's console (add ``):
+
     loremipsum...
     -----END RSA PRIVATE KEY-----`
+
     > -   Copy the log from the browser (notice \ns were added)
     > -   Add it to your env file (notice the ""):
     >     PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nloremipsum...\n-----END RSA PRIVATE KEY----"
+
+6.  in cookie Secure inside .env epmty string for false non empty string for true
