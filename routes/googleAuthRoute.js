@@ -36,38 +36,24 @@ router.get(
                     (err, token) => {
                         if (!err) {
                             // cookie for signup purpose
-                            res.cookie(
-                                'sta',
-                                token,
-                                {
-                                    expires: new Date(
-                                        Date.now() + 5 * 60 * 1000
-                                    ),
-                                    // cannot be changed by browser
-                                    httpOnly: true,
+                            res.cookie('sta', token, {
+                                expires: new Date(Date.now() + 5 * 60 * 1000),
+                                // cannot be changed by browser
+                                httpOnly: true,
+                                domain: '.up.railway.app',
+                                // cookie send back from browser if generated from the same origin
+                                sameSite: 'strict',
 
-                                    // cookie send back from browser if generated from the same origin
-                                    // sameSite: 'strict',
-
-                                    // connection can be done only over https(if true)
-                                    secure:
-                                        process.env.cookieSecure ||
-                                        req.secure ||
-                                        req.headers['x-forwarded-proto'] ===
-                                            'https'
-                                },
-                                { path: '/' }
-                            );
+                                // connection can be done only over https(if true)
+                                secure:
+                                    process.env.cookieSecure ||
+                                    req.secure ||
+                                    req.headers['x-forwarded-proto'] === 'https'
+                            });
 
                             res.redirect(
-                                302,
                                 `${process.env.FRONTEND_DOMAIN}/signup/?signUpName=${req.user.name}&isPreviousSignup=${req.user.isPreviousSignup}`
                             );
-
-                            // app.get('/redirect', (req, res) => {
-                            //     res.cookie('name', 'value', { path: '/' });
-                            //     res.redirect(302, '/newlocation');
-                            //   });
                         }
                     }
                 );
