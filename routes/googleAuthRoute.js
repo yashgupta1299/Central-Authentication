@@ -23,7 +23,7 @@ router.get(
 router.get(
     '/callback',
     passport.authenticate('google', {
-        failureRedirect: 'http://127.0.0.1:4000/?alert=authenticationFailed',
+        failureRedirect: `${process.env.FRONTEND_DOMAIN}/?alert=authenticationFailed`,
         session: false
     }),
     (req, res) => {
@@ -50,13 +50,16 @@ router.get(
                                     req.secure ||
                                     req.headers['x-forwarded-proto'] === 'https'
                             });
-                            res.redirect(`http://127.0.0.1:4000/signup`);
+
+                            res.redirect(
+                                `${process.env.FRONTEND_DOMAIN}/signup/?signUpName=${req.user.name}&isPreviousSignup=${req.user.isPreviousSignup}`
+                            );
                         }
                     }
                 );
             } catch (err) {
                 res.redirect(
-                    'http://127.0.0.1:4000/?alert=authenticationFailed'
+                    `${process.env.FRONTEND_DOMAIN}/?alert=authenticationFailed`
                 );
             }
         })();

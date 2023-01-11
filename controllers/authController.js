@@ -10,7 +10,7 @@ const AppError = require('./../utils/AppError');
 const publicKey = async kid => {
     // kid is unique id given by creater to each jwk
     const client = jwksClient({
-        jwksUri: 'http://127.0.0.1:3000/.well-known/jwks.json',
+        jwksUri: `${process.env.AUTHENTICATION_DOMAIN}/.well-known/jwks.json`,
         cache: true,
         rateLimit: true
     });

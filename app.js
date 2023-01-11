@@ -29,7 +29,7 @@ const app = express();
 // app.use(cors());
 //https://stackoverflow.com/questions/72105765/axios-doesnt-create-a-cookie-even-though-set-cookie-header-is-there
 // app.use(cors({ credentials: true, origin: true })); // for one client I can set domain also
-app.use(cors({ credentials: true, origin: 'http://127.0.0.1:4000' }));
+app.use(cors({ credentials: true, origin: `${process.env.FRONTEND_DOMAIN}` }));
 // say our api is at api.natours.com and front-end at natours.com
 // then we can allow only custom origin
 // app.use(cors({
@@ -43,7 +43,7 @@ app.use(cors({ credentials: true, origin: 'http://127.0.0.1:4000' }));
 // options is just a method like get, post we are just setting headers for preflight request which
 // goes to browser again
 // app.options('*', cors());
-app.options('http://127.0.0.1:4000', cors());
+app.options(`${process.env.FRONTEND_DOMAIN}`, cors());
 // app.options('/api/v1/tours/:id', cors());
 
 // serving static files

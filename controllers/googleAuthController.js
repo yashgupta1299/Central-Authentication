@@ -5,7 +5,7 @@ const Google = require('./../models/googleModel');
 passport.use(
     new GoogleStrategy(
         {
-            callbackURL: `${process.env.callbackURLdomain}/auth/callback`,
+            callbackURL: `${process.env.AUTHENTICATION_DOMAIN}/auth/callback`,
             clientID: process.env.clientID,
             clientSecret: process.env.clientSecret
         },
@@ -18,14 +18,17 @@ passport.use(
                 }
             });
             (async () => {
+                const user = {
+                    id: profile.id,
+                    name: profile._json.name,
+                    isPreviousSignup: false
+                };
                 try {
                     await Google.create(googleData);
                 } catch (err) {
                     // console.log(err);
+                    user.isPreviousSignup = true;
                 }
-                const user = {
-                    id: profile.id
-                };
 
                 // i can pass error here
                 // done(new Error("something went wrong..."), user);
