@@ -5,7 +5,7 @@ const Google = require('./../models/googleModel');
 passport.use(
     new GoogleStrategy(
         {
-            callbackURL: `${process.env.AUTHENTICATION_DOMAIN}/auth/callback`,
+            callbackURL: `${process.env.AUTHENTICATION_DOMAIN}/auth/sta/callback`,
             clientID: process.env.clientID,
             clientSecret: process.env.clientSecret
         },
