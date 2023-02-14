@@ -10,7 +10,8 @@ const xss = require('xss-clean');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const cors = require('cors');
-const googleAuthRoute = require('./routes/googleAuthRoute');
+const googleAuthRouteGoogleLogin = require('./routes/googleAuthRoutes/googleAuthRouteGoogleLogin');
+const googleAuthRouteSTA = require('./routes/googleAuthRoutes/googleAuthRouteSTA');
 const userAuthRoute = require('./routes/authenticationRoute');
 const AppError = require('./utils/AppError');
 const globalErrorController = require('./controllers/globalErrorController');
@@ -125,7 +126,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/auth', googleAuthRoute);
+app.use('/auth/sta', googleAuthRouteSTA);
+app.use('/auth/signInwithGoogle', googleAuthRouteGoogleLogin);
 app.use('/user', userAuthRoute);
 // error generator for all other routes
 // for all methods hence all is used
