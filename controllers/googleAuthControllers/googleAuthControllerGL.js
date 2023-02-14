@@ -1,33 +1,34 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const Google = require('./../models/googleModel');
+const User = require('../../models/userModel');
 
 passport.use(
     new GoogleStrategy(
         {
-            callbackURL: `${process.env.AUTHENTICATION_DOMAIN}/auth/sta/callback`,
+            callbackURL: `${process.env.AUTHENTICATION_DOMAIN}/auth/signInwithGoogle/callback`,
             clientID: process.env.clientID,
             clientSecret: process.env.clientSecret
         },
         (accessToken, refreshToken, profile, done) => {
             // console.log(profile);
-            const googleData = { googleId: profile.id };
-            ['name', 'email', 'picture'].forEach(ele => {
-                if (profile._json[ele]) {
-                    googleData[ele] = profile._json[ele];
-                }
-            });
             (async () => {
                 const user = {
-                    id: profile.id,
-                    name: profile._json.name,
-                    isPreviousSignup: false
+                    loginAccess: true,
+                    id: null
                 };
                 try {
-                    await Google.create(googleData);
+                    // finding user in database
+                    const dbUser = await User.findOne({
+                        email: profile._json.email
+                    });
+                    if (!dbUser) {
+                        user.loginAccess = false;
+                    } else {
+                        // user exist in database
+                        user.id = dbUser.id;
+                    }
                 } catch (err) {
-                    // console.log(err);
-                    user.isPreviousSignup = true;
+                    user.loginAccess = false;
                 }
 
                 // i can pass error here

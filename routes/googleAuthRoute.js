@@ -1,20 +1,22 @@
 const express = require('express');
 const authController = require('./../controllers/authController');
-const passport = require('../controllers/googleAuthController');
+const passportSTA = require('../controllers/googleAuthControllers/googleAuthControllerSTA');
+const passportGoogleLogin = require('../controllers/googleAuthControllers/googleAuthControllerGL');
 
 const router = express.Router();
-router.use(passport.initialize());
+router.use(passportSTA.initialize());
+router.use(passportGoogleLogin.initialize());
 
 router.get(
     '/sta',
-    passport.authenticate('google', {
+    passportSTA.authenticate('google', {
         session: false,
         scope: ['profile', 'email']
     })
 );
 router.get(
     '/sta/callback',
-    passport.authenticate('google', {
+    passportSTA.authenticate('google', {
         failureRedirect: `${process.env.FRONTEND_DOMAIN}/?alert=authenticationFailed`,
         session: false
     }),
@@ -23,14 +25,14 @@ router.get(
 
 router.get(
     '/forgotPassword',
-    passport.authenticate('google', {
+    passportSTA.authenticate('google', {
         session: false,
         scope: ['profile', 'email']
     })
 );
 router.get(
     '/forgotPassword/callback',
-    passport.authenticate('google', {
+    passportSTA.authenticate('google', {
         failureRedirect: `${process.env.FRONTEND_DOMAIN}/?alert=authenticationFailed`,
         session: false
     }),
@@ -39,18 +41,18 @@ router.get(
 
 router.get(
     '/signInwithGoogle',
-    passport.authenticate('google', {
+    passportGoogleLogin.authenticate('google', {
         session: false,
         scope: ['profile', 'email']
     })
 );
 router.get(
     '/signInwithGoogle/callback',
-    passport.authenticate('google', {
+    passportGoogleLogin.authenticate('google', {
         failureRedirect: `${process.env.FRONTEND_DOMAIN}/?alert=authenticationFailed`,
         session: false
     }),
-    authController.googleGetShortTimeAccessToken
+    authController.googleLogin
 );
 
 module.exports = router;
