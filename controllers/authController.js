@@ -146,7 +146,7 @@ exports.googleGetShortTimeAccessToken = catchAsync(async (req, res, next) => {
                             req.secure ||
                             req.headers['x-forwarded-proto'] === 'https'
                     });
-                    console.log('decode', req.params);
+                    console.log('decode', req);
                     res.redirect(
                         `${process.env.FRONTEND_DOMAIN}/signup/?signUpName=${req.user.name}&isPreviousSignup=${req.user.isPreviousSignup}`
                     );
