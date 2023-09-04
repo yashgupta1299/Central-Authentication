@@ -1,71 +1,42 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
+const authController = require('../controllers/authController');
+const passportSTA = require('../controllers/googleAuthController');
 
 const router = express.Router();
-
-const passport = require('../controllers/googleAuthController');
-
-router.use(passport.initialize());
-
-//////
+router.use(passportSTA.initialize());
 
 router.get(
-    '/',
-    passport.authenticate('google', {
+    '/sta',
+    passportSTA.authenticate('shortTimeAccess', {
         session: false,
         scope: ['profile', 'email']
     })
 );
 
-////
-
 router.get(
-    '/callback',
-    passport.authenticate('google', {
-        failureRedirect: `${process.env.FRONTEND_DOMAIN}/?alert=authenticationFailed`,
+    '/sta/callback',
+    passportSTA.authenticate('shortTimeAccess', {
+        failureRedirect: `${process.env.FRONTEND_DOMAIN}/?alert=Authentication Failed`,
         session: false
     }),
-    (req, res) => {
-        (async () => {
-            try {
-                await promisify(jwt.sign)(
-                    { id: req.user.id },
-                    process.env.JWT_SECRET_KEY_AT,
-                    { expiresIn: '5min', algorithm: 'RS256' },
-                    (err, token) => {
-                        if (!err) {
-                            // cookie for signup purpose
-                            res.cookie('sta', token, {
-                                expires: new Date(Date.now() + 5 * 60 * 1000),
-                                // cannot be changed by browser
-                                httpOnly: true,
-                                domain: process.env.COOKIE_DOMAIN,
-                                // cookie send back from browser if generated from the same origin
-                                sameSite: 'strict',
-
-                                // connection can be done only over https(if true)
-                                secure:
-                                    process.env.cookieSecure ||
-                                    req.secure ||
-                                    req.headers['x-forwarded-proto'] === 'https'
-                            });
-
-                            res.redirect(
-                                `${process.env.FRONTEND_DOMAIN}/signup/?signUpName=${req.user.name}&isPreviousSignup=${req.user.isPreviousSignup}`
-                            );
-                        }
-                    }
-                );
-            } catch (err) {
-                res.redirect(
-                    `${process.env.FRONTEND_DOMAIN}/?alert=authenticationFailed`
-                );
-            }
-        })();
-    }
+    authController.googleGetShortTimeAccessToken
 );
 
-////
+router.get(
+    '/signInwithGoogle',
+    passportSTA.authenticate('googleLogin', {
+        session: false,
+        scope: ['profile', 'email']
+    })
+);
+
+router.get(
+    '/signInwithGoogle/callback',
+    passportSTA.authenticate('googleLogin', {
+        failureRedirect: `${process.env.FRONTEND_DOMAIN}/?alert=Authentication Failed`,
+        session: false
+    }),
+    authController.googleLogin
+);
 
 module.exports = router;
