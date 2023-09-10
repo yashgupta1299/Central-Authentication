@@ -8,5 +8,3 @@
 
 ### [More Information](https://github.com/yashgupta1299/Adventure-Resources#readme)
 
-<hr />
-
