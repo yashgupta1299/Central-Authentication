@@ -6,7 +6,7 @@
 
 ### [Resource Server Repo](https://github.com/yashgupta1299/Adventure-Resources.git)
 
-### [More Information](https://github.com/yashgupta1299/Central-Authentication#readme)
+### [More Information](https://github.com/yashgupta1299/Adventure-Resources#readme)
 
 <hr />
 
